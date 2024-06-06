@@ -11,6 +11,5 @@ class WebConfig : WebMvcConfigurer {
             .allowedOrigins("*")
             .allowedMethods("*")
             .allowedHeaders("*")
-            .allowCredentials(true)
     }
 }
