@@ -34,7 +34,13 @@ class OrderService(
 
     @Transactional
     fun create(request: OrderRequest): Order {
-        val order = Order.create(request)
+        val order =
+            Order.create(
+                status = request.status,
+                orderProductRequests = request.orderProductRequests,
+                customerId = request.customerId,
+                payment = request.payment,
+            )
         return orderRepository.save(order)
     }
 
@@ -44,7 +50,12 @@ class OrderService(
         request: OrderUpdateRequest,
     ): Order {
         val order = findOneByIdElseThrow(id)
-        order.update(request = request)
+        order.update(
+            status = request.status,
+            customerId = request.customerId,
+            delivery = request.delivery,
+            payment = request.payment,
+        )
         return order
     }
 

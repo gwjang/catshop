@@ -1,12 +1,11 @@
 package purr.catshop.order.domain.dto
 
-import purr.catshop.order.domain.OrderProduct
 import purr.catshop.order.domain.enums.OrderStatus
+import purr.catshop.product.domain.dto.OrderProductRequest
 
 data class OrderRequest(
     val status: OrderStatus,
-    val products: List<OrderProduct>,
-    val customerId: Int,
-    val delivery: DeliveryRequest? = null,
+    val orderProductRequests: List<OrderProductRequest>,
+    val customerId: Long,
     val payment: PaymentRequest? = null,
 )

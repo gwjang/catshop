@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import purr.catshop.order.domain.Order
 import purr.catshop.order.domain.dto.OrderDTO
 import purr.catshop.order.domain.dto.OrderRequest
 import purr.catshop.order.domain.dto.OrderUpdateRequest
@@ -41,18 +40,18 @@ class OrderResource(
     @ApiResponse(responseCode = "201")
     fun createOrder(
         @RequestBody @Valid orderRequest: OrderRequest,
-    ): ResponseEntity<Order> {
-        val createdId = orderService.create(orderRequest)
-        return ResponseEntity(createdId, HttpStatus.CREATED)
+    ): ResponseEntity<OrderDTO> {
+        val order = orderService.create(orderRequest)
+        return ResponseEntity(order.toDTO(), HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")
     fun updateOrder(
         @PathVariable(name = "id") id: Long,
         @RequestBody @Valid orderUpdateRequest: OrderUpdateRequest,
-    ): ResponseEntity<Long> {
-        orderService.update(id, orderUpdateRequest)
-        return ResponseEntity.ok(id)
+    ): ResponseEntity<OrderDTO> {
+        val order = orderService.update(id, orderUpdateRequest)
+        return ResponseEntity.ok(order.toDTO())
     }
 
     @DeleteMapping("/{id}")

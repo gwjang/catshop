@@ -1,19 +1,14 @@
 package purr.catshop.order.domain.dto
 
 import purr.catshop.base.domain.BaseDTO
-import purr.catshop.order.domain.enums.OrderStatus
-import purr.catshop.product.domain.dto.OrderProductDTO
+import purr.catshop.order.domain.enums.PaymentType
 import java.time.LocalDateTime
 
-class OrderDTO(
+data class PaymentDTO(
     override val id: Long,
     override val createdDate: LocalDateTime,
     override val updatedDate: LocalDateTime,
-    val status: OrderStatus,
-    val orderProducts: List<OrderProductDTO>,
-    val customerId: Long,
-    val delivery: DeliveryDTO?,
-    val payment: PaymentDTO?,
+    var type: PaymentType,
 ) : BaseDTO(
         id = id,
         createdDate = createdDate,

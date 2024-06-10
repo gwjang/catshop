@@ -10,11 +10,13 @@ import purr.catshop.product.domain.dto.CartDTO
 import purr.catshop.product.domain.dto.CartRequest
 import purr.catshop.product.domain.dto.CartUpdateRequest
 import purr.catshop.product.repos.CartRepository
+import purr.catshop.product.repos.ProductRepository
 import purr.catshop.product.service.dto.CartQueryRequest
 
 @Service
 class CartService(
     private val cartRepository: CartRepository,
+    private val productRepository: ProductRepository,
 ) : BaseService<Cart>(
         entityClassType = Cart::class.java,
         pathBuilder =
@@ -34,7 +36,8 @@ class CartService(
 
     @Transactional
     fun create(request: CartRequest): Cart {
-        val cart = Cart.create(request)
+        val product = productRepository.findById(request.productId).orElseThrow { IllegalArgumentException("Product not found") }
+        val cart = Cart.create(customerId = request.customerId, product = product, quantity = request.quantity)
         return cartRepository.save(cart)
     }
 

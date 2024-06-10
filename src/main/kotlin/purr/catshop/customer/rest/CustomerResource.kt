@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import purr.catshop.customer.domain.Customer
 import purr.catshop.customer.domain.dto.CustomerDTO
 import purr.catshop.customer.domain.dto.CustomerRequest
 import purr.catshop.customer.domain.dto.CustomerUpdateRequest
@@ -41,9 +40,9 @@ class CustomerResource(
     @ApiResponse(responseCode = "201")
     fun createCustomer(
         @RequestBody @Valid customerRequest: CustomerRequest,
-    ): ResponseEntity<Customer> {
-        val createdId = customerService.create(customerRequest)
-        return ResponseEntity(createdId, HttpStatus.CREATED)
+    ): ResponseEntity<CustomerDTO> {
+        val customer = customerService.create(customerRequest)
+        return ResponseEntity(customer.toDTO(), HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")
@@ -51,9 +50,9 @@ class CustomerResource(
         @PathVariable(name = "id") id: Long,
         @RequestBody @Valid
         customerUpdateRequest: CustomerUpdateRequest,
-    ): ResponseEntity<Long> {
-        customerService.update(id, customerUpdateRequest)
-        return ResponseEntity.ok(id)
+    ): ResponseEntity<CustomerDTO> {
+        val customer = customerService.update(id, customerUpdateRequest)
+        return ResponseEntity.ok(customer.toDTO())
     }
 
     @DeleteMapping("/{id}")

@@ -13,10 +13,9 @@ import jakarta.persistence.Table
 import purr.catshop.base.domain.BaseEntity
 import purr.catshop.order.domain.dto.DeliveryRequest
 import purr.catshop.order.domain.dto.OrderDTO
-import purr.catshop.order.domain.dto.OrderRequest
-import purr.catshop.order.domain.dto.OrderUpdateRequest
 import purr.catshop.order.domain.dto.PaymentRequest
 import purr.catshop.order.domain.enums.OrderStatus
+import purr.catshop.product.domain.dto.OrderProductRequest
 
 @Table(name = "`order`")
 @Entity
@@ -26,15 +25,15 @@ class Order(
     var status: OrderStatus,
     @OneToMany(
         mappedBy = "order",
-        fetch = FetchType.LAZY,
+        fetch = FetchType.EAGER,
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
     )
     var products: MutableSet<OrderProduct> = mutableSetOf(),
     @Column(nullable = false)
-    var customerId: Int,
+    var customerId: Long,
     @OneToOne(
-        fetch = FetchType.LAZY,
+        fetch = FetchType.EAGER,
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
     )
@@ -45,7 +44,7 @@ class Order(
     )
     var delivery: Delivery? = null,
     @OneToOne(
-        fetch = FetchType.LAZY,
+        fetch = FetchType.EAGER,
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
     )
@@ -57,15 +56,26 @@ class Order(
     var payment: Payment? = null,
 ) : BaseEntity() {
     companion object {
-        fun create(request: OrderRequest): Order {
+        fun create(
+            status: OrderStatus,
+            orderProductRequests: List<OrderProductRequest>,
+            customerId: Long,
+            payment: PaymentRequest? = null,
+        ): Order {
             val order =
                 Order(
-                    status = OrderStatus.PENDING,
-                    products = request.products.toMutableSet(),
-                    customerId = request.customerId,
+                    status = status,
+                    customerId = customerId,
                 )
-            request.delivery?.let { order.relateDelivery(it) }
-            request.payment?.let { order.relatePayment(it) }
+            order.products =
+                orderProductRequests.map {
+                    OrderProduct.create(
+                        productId = it.productId,
+                        count = it.count,
+                        order = order,
+                    )
+                }.toMutableSet()
+            payment?.let { order.relatePayment(it) }
             return order
         }
     }
@@ -73,35 +83,33 @@ class Order(
     private fun relatePayment(paymentRequest: PaymentRequest) {
         val payment =
             Payment.create(
-                request =
-                    PaymentRequest(
-                        type = paymentRequest.type,
-                        order = this,
-                    ),
+                paymentRequest.type,
+                this,
             )
         payment.order = this
         this.payment = payment
     }
 
-    private fun relateDelivery(deliveryRequest: DeliveryRequest) {
+    private fun relateDelivery(address: String) {
         val delivery =
             Delivery.create(
-                request =
-                    DeliveryRequest(
-                        address = deliveryRequest.address,
-                        order = this,
-                    ),
+                address = address,
+                order = this,
             )
         delivery.order = this
         this.delivery = delivery
     }
 
-    fun update(request: OrderUpdateRequest) {
-        this.status = request.status
-        this.products = request.products.toMutableSet()
-        this.customerId = request.customerId
-        request.delivery?.let { this.relateDelivery(it) }
-        request.payment?.let { this.relatePayment(it) }
+    fun update(
+        status: OrderStatus,
+        customerId: Long,
+        delivery: DeliveryRequest? = null,
+        payment: PaymentRequest? = null,
+    ) {
+        this.status = status
+        this.customerId = customerId
+        delivery?.let { this.relateDelivery(it.address) }
+        payment?.let { this.relatePayment(it) }
     }
 
     override fun toDTO(): OrderDTO {
@@ -110,10 +118,10 @@ class Order(
             createdDate = createdDate,
             updatedDate = updatedDate,
             status = status,
-            products = products.toList(),
+            orderProducts = products.map { it.toDTO() },
             customerId = customerId,
-            delivery = delivery,
-            payment = payment,
+            delivery = delivery?.toDTO(),
+            payment = payment?.toDTO(),
         )
     }
 }

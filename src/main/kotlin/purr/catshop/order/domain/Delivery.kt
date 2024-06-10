@@ -7,7 +7,6 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.OneToOne
 import purr.catshop.base.domain.BaseEntity
 import purr.catshop.order.domain.dto.DeliveryDTO
-import purr.catshop.order.domain.dto.DeliveryRequest
 import purr.catshop.order.domain.dto.DeliveryUpdateRequest
 
 @Entity
@@ -17,19 +16,22 @@ class Delivery(
 ) : BaseEntity() {
     @OneToOne(
         mappedBy = "delivery",
-        fetch = FetchType.LAZY,
+        fetch = FetchType.EAGER,
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
     )
     lateinit var order: Order
 
     companion object {
-        fun create(request: DeliveryRequest): Delivery {
+        fun create(
+            address: String,
+            order: Order,
+        ): Delivery {
             val delivery =
                 Delivery(
-                    address = request.address,
+                    address = address,
                 )
-            delivery.relatedOrder(request.order)
+            delivery.relatedOrder(order)
             return delivery
         }
     }

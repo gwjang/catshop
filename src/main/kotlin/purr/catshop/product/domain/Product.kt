@@ -17,14 +17,14 @@ class Product(
     var name: String,
     @OneToMany(
         mappedBy = "product",
-        fetch = FetchType.LAZY,
+        fetch = FetchType.EAGER,
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
     )
     var carts: MutableSet<Cart> = mutableSetOf(),
 ) : BaseEntity() {
     @ManyToOne(
-        fetch = FetchType.LAZY,
+        fetch = FetchType.EAGER,
         cascade = [CascadeType.ALL],
     )
     @JoinColumn(

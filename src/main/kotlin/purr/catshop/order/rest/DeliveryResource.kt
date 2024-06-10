@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import purr.catshop.order.domain.Delivery
 import purr.catshop.order.domain.dto.DeliveryDTO
 import purr.catshop.order.domain.dto.DeliveryRequest
 import purr.catshop.order.domain.dto.DeliveryUpdateRequest
@@ -41,9 +40,9 @@ class DeliveryResource(
     @ApiResponse(responseCode = "201")
     fun createDelivery(
         @RequestBody @Valid deliveryRequest: DeliveryRequest,
-    ): ResponseEntity<Delivery> {
-        val createdId = deliveryService.create(deliveryRequest)
-        return ResponseEntity(createdId, HttpStatus.CREATED)
+    ): ResponseEntity<DeliveryDTO> {
+        val delivery = deliveryService.create(deliveryRequest)
+        return ResponseEntity(delivery.toDTO(), HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")
@@ -51,9 +50,9 @@ class DeliveryResource(
         @PathVariable(name = "id") id: Long,
         @RequestBody @Valid
         deliveryUpdateRequest: DeliveryUpdateRequest,
-    ): ResponseEntity<Long> {
-        deliveryService.update(id, deliveryUpdateRequest)
-        return ResponseEntity.ok(id)
+    ): ResponseEntity<DeliveryDTO> {
+        val delivery = deliveryService.update(id, deliveryUpdateRequest)
+        return ResponseEntity.ok(delivery.toDTO())
     }
 
     @DeleteMapping("/{id}")

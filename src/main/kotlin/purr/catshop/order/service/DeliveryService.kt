@@ -10,11 +10,13 @@ import purr.catshop.order.domain.dto.DeliveryDTO
 import purr.catshop.order.domain.dto.DeliveryRequest
 import purr.catshop.order.domain.dto.DeliveryUpdateRequest
 import purr.catshop.order.repos.DeliveryRepository
+import purr.catshop.order.repos.OrderRepository
 import purr.catshop.order.service.dto.DeliveryQueryRequest
 
 @Service
 class DeliveryService(
     private val deliveryRepository: DeliveryRepository,
+    private val orderRepository: OrderRepository,
 ) : BaseService<Delivery>(
         entityClassType = Delivery::class.java,
         pathBuilder =
@@ -34,7 +36,8 @@ class DeliveryService(
 
     @Transactional
     fun create(request: DeliveryRequest): Delivery {
-        val delivery = Delivery.create(request)
+        val order = orderRepository.findById(request.orderId).orElseThrow { IllegalArgumentException("Order not found") }
+        val delivery = Delivery.create(address = request.address, order = order)
         return deliveryRepository.save(delivery)
     }
 

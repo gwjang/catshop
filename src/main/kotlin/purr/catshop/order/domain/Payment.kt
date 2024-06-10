@@ -3,9 +3,8 @@ package purr.catshop.order.domain
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.OneToOne
-import purr.catshop.base.domain.BaseDTO
 import purr.catshop.base.domain.BaseEntity
-import purr.catshop.order.domain.dto.PaymentRequest
+import purr.catshop.order.domain.dto.PaymentDTO
 import purr.catshop.order.domain.enums.PaymentType
 
 @Entity
@@ -20,12 +19,15 @@ class Payment(
     lateinit var order: Order
 
     companion object {
-        fun create(request: PaymentRequest): Payment {
+        fun create(
+            type: PaymentType,
+            order: Order,
+        ): Payment {
             val payment =
                 Payment(
-                    type = request.type,
+                    type = type,
                 )
-            payment.relatedOrder(request.order)
+            payment.relatedOrder(order)
             return payment
         }
     }
@@ -34,7 +36,12 @@ class Payment(
         this.order = order
     }
 
-    override fun toDTO(): BaseDTO {
-        TODO("Not yet implemented")
+    override fun toDTO(): PaymentDTO {
+        return PaymentDTO(
+            id = id,
+            createdDate = createdDate,
+            updatedDate = updatedDate,
+            type = type,
+        )
     }
 }

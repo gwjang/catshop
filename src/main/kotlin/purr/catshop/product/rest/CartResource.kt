@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import purr.catshop.product.domain.Cart
 import purr.catshop.product.domain.dto.CartDTO
 import purr.catshop.product.domain.dto.CartRequest
 import purr.catshop.product.domain.dto.CartUpdateRequest
@@ -41,18 +40,18 @@ class CartResource(
     @ApiResponse(responseCode = "201")
     fun createCart(
         @RequestBody @Valid cartRequest: CartRequest,
-    ): ResponseEntity<Cart> {
-        val createdId = cartService.create(cartRequest)
-        return ResponseEntity(createdId, HttpStatus.CREATED)
+    ): ResponseEntity<CartDTO> {
+        val cart = cartService.create(cartRequest)
+        return ResponseEntity(cart.toDTO(), HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")
     fun updateCart(
         @PathVariable(name = "id") id: Long,
         @RequestBody @Valid cartUpdateRequest: CartUpdateRequest,
-    ): ResponseEntity<Long> {
-        cartService.update(id, cartUpdateRequest)
-        return ResponseEntity.ok(id)
+    ): ResponseEntity<CartDTO> {
+        val cart = cartService.update(id, cartUpdateRequest)
+        return ResponseEntity.ok(cart.toDTO())
     }
 
     @DeleteMapping("/{id}")

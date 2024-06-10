@@ -8,7 +8,6 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import purr.catshop.base.domain.BaseEntity
 import purr.catshop.product.domain.dto.CartDTO
-import purr.catshop.product.domain.dto.CartRequest
 import purr.catshop.product.domain.dto.CartUpdateRequest
 
 @Entity
@@ -19,7 +18,7 @@ class Cart(
     var quantity: Int,
 ) : BaseEntity() {
     @ManyToOne(
-        fetch = FetchType.LAZY,
+        fetch = FetchType.EAGER,
         cascade = [CascadeType.ALL],
     )
     @JoinColumn(
@@ -29,13 +28,17 @@ class Cart(
     lateinit var product: Product
 
     companion object {
-        fun create(request: CartRequest): Cart {
+        fun create(
+            customerId: Long,
+            product: Product,
+            quantity: Int,
+        ): Cart {
             val cart =
                 Cart(
-                    customerId = request.customerId,
-                    quantity = request.quantity,
+                    customerId = customerId,
+                    quantity = quantity,
                 )
-            cart.relateProduct(request.product)
+            cart.relateProduct(product)
             return cart
         }
     }

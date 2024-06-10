@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import purr.catshop.product.domain.Product
 import purr.catshop.product.domain.dto.ProductDTO
 import purr.catshop.product.domain.dto.ProductRequest
 import purr.catshop.product.domain.dto.ProductUpdateRequest
@@ -41,9 +40,9 @@ class ProductResource(
     @ApiResponse(responseCode = "201")
     fun createProduct(
         @RequestBody @Valid productRequest: ProductRequest,
-    ): ResponseEntity<Product> {
+    ): ResponseEntity<ProductDTO> {
         val product = productService.create(productRequest)
-        return ResponseEntity(product, HttpStatus.CREATED)
+        return ResponseEntity(product.toDTO(), HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")
@@ -51,9 +50,9 @@ class ProductResource(
         @PathVariable(name = "id") id: Long,
         @RequestBody @Valid
         productUpdateRequest: ProductUpdateRequest,
-    ): ResponseEntity<Product> {
+    ): ResponseEntity<ProductDTO> {
         val product = productService.update(id, productUpdateRequest)
-        return ResponseEntity.ok(product)
+        return ResponseEntity.ok(product.toDTO())
     }
 
     @DeleteMapping("/{id}")

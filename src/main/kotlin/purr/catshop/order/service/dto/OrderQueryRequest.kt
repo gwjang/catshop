@@ -8,7 +8,7 @@ import purr.catshop.order.domain.enums.OrderStatus
 
 data class OrderQueryRequest(
     val status: OrderStatus? = null,
-    val customerId: Int? = null,
+    val customerId: Long? = null,
 ) : BaseQueryRequest<Predicate>() {
     override fun toPredicate(): Predicate {
         val qOrder = QOrder.order
