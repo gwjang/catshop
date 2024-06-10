@@ -17,7 +17,7 @@ class Category(
     @JsonIgnore
     @OneToMany(
         mappedBy = "category",
-        fetch = FetchType.LAZY,
+        fetch = FetchType.EAGER,
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
     )

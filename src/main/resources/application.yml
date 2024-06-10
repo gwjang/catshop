@@ -17,6 +17,8 @@ spring:
             non_contextual_creation: true
         id:
           new_generator_mappings: true
+        default_batch_fetch_size: 1000
+    show-sql: true
   docker:
     compose:
       lifecycle-management: start-only
